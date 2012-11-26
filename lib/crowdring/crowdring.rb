@@ -1,3 +1,4 @@
+require "sinatra/json"
 module Crowdring
   def self.statsd
     @statsd ||= Statsd.new(ENV['STATSD_HOST'] || "http://localhost").tap do |s|
@@ -6,6 +7,7 @@ module Crowdring
   end
 
   class Server < Sinatra::Base
+    helpers Sinatra::JSON
     register Sinatra::SinatraAuthentication
     enable :sessions
     use Rack::Flash
@@ -358,6 +360,13 @@ module Crowdring
       else
         flash[:errors] = "No campaign with id #{params[:id]}"
         404
+      end
+    end
+
+    get '/campaign/:id/count' do
+      @campaign = Campaign.get(params[:id])
+      if @campaign
+        json :count => @campaign.unique_rings.count
       end
     end
 
