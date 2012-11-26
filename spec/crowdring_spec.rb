@@ -19,7 +19,7 @@ describe Crowdring::Server do
     end
 
     it 'should return unique number of rings for the given campaign' do
-      get "/campaign/#{@c.id}/count"
+      get "/campaign/#{@c.title}/count"
       last_response.ok?
       last_response.body.should == {:count => 1}.to_json
     end

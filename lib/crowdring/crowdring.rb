@@ -363,8 +363,8 @@ module Crowdring
       end
     end
 
-    get '/campaign/:id/count' do
-      @campaign = Campaign.get(params[:id])
+    get '/campaign/:title/count' do
+      @campaign = Campaign.first(:title => params[:title])
       if @campaign
         json :count => @campaign.unique_rings.count
       end
