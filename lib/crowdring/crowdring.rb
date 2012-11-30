@@ -1,4 +1,6 @@
 require "sinatra/json"
+require "sinatra/jsonp"
+
 module Crowdring
   def self.statsd
     @statsd ||= Statsd.new(ENV['STATSD_HOST'] || "http://localhost").tap do |s|
@@ -8,6 +10,7 @@ module Crowdring
 
   class Server < Sinatra::Base
     helpers Sinatra::JSON
+    helpers Sinatra::Jsonp
     register Sinatra::SinatraAuthentication
     enable :sessions
     use Rack::Flash
@@ -366,7 +369,8 @@ module Crowdring
     get '/campaign/:title/count' do
       @campaign = Campaign.first(:title => params[:title])
       if @campaign
-        json :count => @campaign.unique_rings.count
+        result = {data: @campaign.unique_rings.count}
+        jsonp result, params[:callback]
       end
     end
 
